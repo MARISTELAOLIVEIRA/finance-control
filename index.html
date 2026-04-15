@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceControl – Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dashboard-page">
+
+  <!-- Barra de navegação -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-name">FinanceControl</span>
+    </div>
+    <div class="navbar-menu">
+      <a href="index.html" class="nav-link active">Dashboard</a>
+      <a href="#transacoes" class="nav-link">Transações</a>
+      <a href="#relatorios" class="nav-link">Relatórios</a>
+    </div>
+    <div class="navbar-user">
+      <span class="user-name">Olá, João</span>
+      <a href="login.html" class="btn-logout">Sair</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- Cabeçalho -->
+    <header class="dashboard-header">
+      <h1>Dashboard Financeiro</h1>
+      <p class="subtitle">Resumo de abril de 2026</p>
+    </header>
+
+    <!-- Cards de resumo -->
+    <section class="summary-cards">
+      <div class="card card-saldo">
+        <div class="card-icon">💳</div>
+        <div class="card-info">
+          <span class="card-label">Saldo Atual</span>
+          <span class="card-value">R$ 3.250,00</span>
+        </div>
+      </div>
+      <div class="card card-receita">
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+          <span class="card-label">Receitas do Mês</span>
+          <span class="card-value positive">R$ 5.800,00</span>
+        </div>
+      </div>
+      <div class="card card-despesa">
+        <div class="card-icon">📉</div>
+        <div class="card-info">
+          <span class="card-label">Despesas do Mês</span>
+          <span class="card-value negative">R$ 2.550,00</span>
+        </div>
+      </div>
+      <div class="card card-economia">
+        <div class="card-icon">🏦</div>
+        <div class="card-info">
+          <span class="card-label">Economia</span>
+          <span class="card-value positive">R$ 3.250,00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lançar transação + Lista de transações -->
+    <section class="transactions-section" id="transacoes">
+      <div class="transactions-header">
+        <h2>Transações Recentes</h2>
+        <button class="btn-primary" id="btnNovaTransacao">+ Nova Transação</button>
+      </div>
+
+      <!-- Formulário de nova transação (oculto por padrão) -->
+      <div class="transaction-form" id="formTransacao" style="display:none;">
+        <h3>Nova Transação</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" placeholder="Ex.: Supermercado" />
+          </div>
+          <div class="form-group">
+            <label for="valor">Valor (R$)</label>
+            <input type="number" id="valor" placeholder="0,00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo</label>
+            <select id="tipo">
+              <option value="despesa">Despesa</option>
+              <option value="receita">Receita</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="categoria">Categoria</label>
+            <select id="categoria">
+              <option value="alimentacao">Alimentação</option>
+              <option value="transporte">Transporte</option>
+              <option value="saude">Saúde</option>
+              <option value="lazer">Lazer</option>
+              <option value="salario">Salário</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="data">Data</label>
+            <input type="date" id="data" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="btnSalvar">Salvar</button>
+          <button class="btn-secondary" id="btnCancelar">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Tabela de transações -->
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaTransacoes">
+          <tr>
+            <td>10/04/2026</td>
+            <td>Supermercado</td>
+            <td><span class="badge badge-alimentacao">Alimentação</span></td>
+            <td><span class="tipo-badge despesa">Despesa</span></td>
+            <td class="negative">- R$ 350,00</td>
+          </tr>
+          <tr>
+            <td>08/04/2026</td>
+            <td>Salário</td>
+            <td><span class="badge badge-salario">Salário</span></td>
+            <td><span class="tipo-badge receita">Receita</span></td>
+            <td class="positive">+ R$ 5.800,00</td>
+          </tr>
+          <tr>
+            <td>07/04/2026</td>
+            <td>Conta de Luz</td>
+            <td><span class="badge badge-outros">Outros</span></td>
+            <td><span class="tipo-badge despesa">Despesa</span></td>
+            <td class="negative">- R$ 180,00</td>
+          </tr>
+          <tr>
+            <td>05/04/2026</td>
+            <td>Combustível</td>
+            <td><span class="badge badge-transporte">Transporte</span></td>
+            <td><span class="tipo-badge despesa">Despesa</span></td>
+            <td class="negative">- R$ 220,00</td>
+          </tr>
+          <tr>
+            <td>03/04/2026</td>
+            <td>Plano de Saúde</td>
+            <td><span class="badge badge-saude">Saúde</span></td>
+            <td><span class="tipo-badge despesa">Despesa</span></td>
+            <td class="negative">- R$ 350,00</td>
+          </tr>
+          <tr>
+            <td>01/04/2026</td>
+            <td>Streaming</td>
+            <td><span class="badge badge-lazer">Lazer</span></td>
+            <td><span class="tipo-badge despesa">Despesa</span></td>
+            <td class="negative">- R$ 55,00</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FinanceControl. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    // Toggle formulário de nova transação
+    document.getElementById('btnNovaTransacao').addEventListener('click', function () {
+      const form = document.getElementById('formTransacao');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('btnCancelar').addEventListener('click', function () {
+      document.getElementById('formTransacao').style.display = 'none';
+    });
+
+    // Definir data de hoje como padrão
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('data').value = today;
+
+    // Salvar transação na tabela (simulação front-end)
+    document.getElementById('btnSalvar').addEventListener('click', function () {
+      const descricao = document.getElementById('descricao').value.trim();
+      const valor = parseFloat(document.getElementById('valor').value);
+      const tipo = document.getElementById('tipo').value;
+      const categoria = document.getElementById('categoria').value;
+      const data = document.getElementById('data').value;
+
+      if (!descricao || isNaN(valor) || valor <= 0 || !data) {
+        alert('Preencha todos os campos corretamente.');
+        return;
+      }
+
+      const [ano, mes, dia] = data.split('-');
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+      const categoriaLabel = {
+        alimentacao: 'Alimentação', transporte: 'Transporte',
+        saude: 'Saúde', lazer: 'Lazer', salario: 'Salário', outros: 'Outros'
+      }[categoria];
+      const sinal = tipo === 'receita' ? '+' : '-';
+      const classe = tipo === 'receita' ? 'positive' : 'negative';
+
+      const tbody = document.getElementById('tabelaTransacoes');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${dataFormatada}</td>
+        <td>${descricao}</td>
+        <td><span class="badge badge-${categoria}">${categoriaLabel}</span></td>
+        <td><span class="tipo-badge ${tipo}">${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</span></td>
+        <td class="${classe}">${sinal} R$ ${valor.toFixed(2).replace('.', ',')}</td>
+      `;
+      tbody.insertAdjacentElement('afterbegin', tr);
+
+      document.getElementById('formTransacao').style.display = 'none';
+      document.getElementById('descricao').value = '';
+      document.getElementById('valor').value = '';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceControl – Cadastro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <div class="auth-card auth-card-wide">
+
+      <div class="auth-logo">
+        <span class="brand-icon-lg">💰</span>
+        <h1 class="brand-title">FinanceControl</h1>
+        <p class="brand-subtitle">Crie sua conta e comece a controlar suas finanças</p>
+      </div>
+
+      <form class="auth-form" id="formCadastro" novalidate>
+        <h2>Criar conta</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome">Nome completo</label>
+            <input type="text" id="nome" name="nome"
+                   placeholder="Seu nome completo" autocomplete="name" required />
+            <span class="field-error" id="nomeError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" name="cpf"
+                   placeholder="000.000.000-00" maxlength="14" required />
+            <span class="field-error" id="cpfError"></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="emailCad">E-mail</label>
+            <input type="email" id="emailCad" name="email"
+                   placeholder="seu@email.com" autocomplete="email" required />
+            <span class="field-error" id="emailCadError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone"
+                   placeholder="(00) 00000-0000" maxlength="15" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="senhaCad">Senha</label>
+            <div class="input-password">
+              <input type="password" id="senhaCad" name="senha"
+                     placeholder="Mínimo 8 caracteres" autocomplete="new-password" required />
+              <button type="button" class="toggle-password" data-target="senhaCad" aria-label="Mostrar senha">👁</button>
+            </div>
+            <span class="field-error" id="senhaCadError"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmarSenha">Confirmar senha</label>
+            <div class="input-password">
+              <input type="password" id="confirmarSenha" name="confirmarSenha"
+                     placeholder="Repita a senha" autocomplete="new-password" required />
+              <button type="button" class="toggle-password" data-target="confirmarSenha" aria-label="Mostrar senha">👁</button>
+            </div>
+            <span class="field-error" id="confirmarSenhaError"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="rendaMensal">Renda mensal (opcional)</label>
+          <input type="number" id="rendaMensal" name="rendaMensal"
+                 placeholder="R$ 0,00" min="0" step="0.01" />
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="termos" required />
+            Concordo com os <a href="#" class="link-primary">Termos de Uso</a> e
+            <a href="#" class="link-primary">Política de Privacidade</a>
+          </label>
+          <span class="field-error" id="termosError"></span>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Criar conta</button>
+
+        <p class="auth-switch">
+          Já tem uma conta? <a href="login.html" class="link-primary">Entrar</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Toggle senhas visíveis
+    document.querySelectorAll('.toggle-password').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const targetId = this.dataset.target;
+        const input = document.getElementById(targetId);
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+    });
+
+    // Máscara CPF
+    document.getElementById('cpf').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 11);
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d)/, '$1.$2');
+      v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      this.value = v;
+    });
+
+    // Máscara telefone
+    document.getElementById('telefone').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 11);
+      v = v.replace(/(\d{2})(\d)/, '($1) $2');
+      v = v.replace(/(\d{5})(\d)/, '$1-$2');
+      this.value = v;
+    });
+
+    // Validação e envio
+    document.getElementById('formCadastro').addEventListener('submit', function (e) {
+      e.preventDefault();
+      let valid = true;
+
+      const limpar = (id) => { document.getElementById(id).textContent = ''; };
+      const erro = (id, msg) => { document.getElementById(id).textContent = msg; valid = false; };
+
+      ['nomeError','emailCadError','cpfError','senhaCadError','confirmarSenhaError','termosError']
+        .forEach(limpar);
+
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('emailCad').value.trim();
+      const cpf = document.getElementById('cpf').value.replace(/\D/g,'');
+      const senha = document.getElementById('senhaCad').value;
+      const confirmar = document.getElementById('confirmarSenha').value;
+      const termos = document.getElementById('termos').checked;
+
+      if (nome.length < 3) erro('nomeError', 'Informe seu nome completo.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) erro('emailCadError', 'Informe um e-mail válido.');
+      if (cpf.length !== 11) erro('cpfError', 'CPF inválido. Informe 11 dígitos.');
+      if (senha.length < 8) erro('senhaCadError', 'A senha deve ter pelo menos 8 caracteres.');
+      if (senha !== confirmar) erro('confirmarSenhaError', 'As senhas não coincidem.');
+      if (!termos) erro('termosError', 'Você deve aceitar os termos para continuar.');
+
+      if (valid) {
+        alert('Conta criada com sucesso! Redirecionando para o login...');
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>
