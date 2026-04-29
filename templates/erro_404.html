@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Erro 404 - FinanceControl</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">404</h1>
+        <h2>Página não encontrada</h2>
+        <p class="brand-subtitle">A página que você procura não existe.</p>
+      </div>
+      <a href="{{ url_for('dashboard') }}" class="btn-primary btn-full" style="margin-top: 20px;">Voltar ao Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceControl – Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="dashboard-page">
+
+  <!-- Barra de navegação -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-name">FinanceControl</span>
+    </div>
+    <div class="navbar-menu">
+      <a href="{{ url_for('dashboard') }}" class="nav-link active">Dashboard</a>
+      <a href="#transacoes" class="nav-link">Transações</a>
+      <a href="{{ url_for('relatorio') }}" class="nav-link">Relatórios</a>
+    </div>
+    <div class="navbar-user">
+      <span class="user-name">Olá, {{ current_user.nome.split()[0] }}</span>
+      <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+    </div>
+  </nav>
+
+  <main class="dashboard-main">
+
+    <!-- Cabeçalho -->
+    <header class="dashboard-header">
+      <h1>Dashboard Financeiro</h1>
+      <p class="subtitle">Resumo de {{ mes_ano }}</p>
+    </header>
+
+    <!-- Cards de resumo -->
+    <section class="summary-cards">
+      <div class="card card-saldo">
+        <div class="card-icon">💳</div>
+        <div class="card-info">
+          <span class="card-label">Saldo Atual</span>
+          <span class="card-value {% if saldo_atual >= 0 %}positive{% else %}negative{% endif %}">
+            R$ {{ "%.2f"|format(saldo_atual) }}
+          </span>
+        </div>
+      </div>
+      <div class="card card-receita">
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+          <span class="card-label">Receitas do Mês</span>
+          <span class="card-value positive">R$ {{ "%.2f"|format(receitas_mes) }}</span>
+        </div>
+      </div>
+      <div class="card card-despesa">
+        <div class="card-icon">📉</div>
+        <div class="card-info">
+          <span class="card-label">Despesas do Mês</span>
+          <span class="card-value negative">R$ {{ "%.2f"|format(despesas_mes) }}</span>
+        </div>
+      </div>
+      <div class="card card-economia">
+        <div class="card-icon">🏦</div>
+        <div class="card-info">
+          <span class="card-label">Economia</span>
+          <span class="card-value {% if economia >= 0 %}positive{% else %}negative{% endif %}">
+            R$ {{ "%.2f"|format(economia) }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lançar transação + Lista de transações -->
+    <section class="transactions-section" id="transacoes">
+      <div class="transactions-header">
+        <h2>Transações Recentes</h2>
+        <button class="btn-primary" id="btnNovaTransacao">+ Nova Transação</button>
+      </div>
+
+      <!-- Formulário de nova transação (oculto por padrão) -->
+      <div class="transaction-form" id="formTransacao" style="display:none;">
+        <h3>Nova Transação</h3>
+        <div id="formError" style="color: #ff6b6b; margin-bottom: 16px; display: none;"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" placeholder="Ex.: Supermercado" />
+          </div>
+          <div class="form-group">
+            <label for="valor">Valor (R$)</label>
+            <input type="number" id="valor" placeholder="0,00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo</label>
+            <select id="tipo">
+              <option value="despesa">Despesa</option>
+              <option value="receita">Receita</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="categoria">Categoria</label>
+            <select id="categoria">
+              <option value="alimentacao">Alimentação</option>
+              <option value="transporte">Transporte</option>
+              <option value="saude">Saúde</option>
+              <option value="lazer">Lazer</option>
+              <option value="salario">Salário</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="form-group" style="display: flex; gap: 8px; margin-top: 24px;">
+            <button type="button" class="btn-primary" id="btnSalvar">Salvar</button>
+            <button type="button" class="btn-secondary" id="btnCancelar">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de transações -->
+      <table class="transactions-table" id="tabelaTransacoes">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in transacoes %}
+          <tr data-id="{{ t.id }}">
+            <td>{{ t.data.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ t.descricao }}</td>
+            <td><span class="badge badge-{{ t.categoria }}">{{ t.categoria }}</span></td>
+            <td><span class="tipo-badge {{ t.tipo }}">{{ t.tipo.upper() }}</span></td>
+            <td class="{% if t.tipo == 'receita' %}positive{% else %}negative{% endif %}">
+              {% if t.tipo == 'despesa' %}-{% endif %}R$ {{ "%.2f"|format(t.valor) }}
+            </td>
+            <td>
+              <button class="btn-delete" data-id="{{ t.id }}" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1.2rem;">🗑️</button>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 30px; color: #8b949e;">
+              Nenhuma transação registrada. Comece criando uma nova!
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>FinanceControl © 2026 • Seu controle financeiro na palma da mão 💰</p>
+    </footer>
+
+  </main>
+
+  <script>
+    // Toggle formulário de transação
+    document.getElementById('btnNovaTransacao').addEventListener('click', function () {
+      const form = document.getElementById('formTransacao');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      if (form.style.display === 'block') {
+        document.getElementById('descricao').focus();
+      }
+    });
+
+    document.getElementById('btnCancelar').addEventListener('click', function () {
+      document.getElementById('formTransacao').style.display = 'none';
+      limparFormulario();
+    });
+
+    function limparFormulario() {
+      document.getElementById('descricao').value = '';
+      document.getElementById('valor').value = '';
+      document.getElementById('tipo').value = 'despesa';
+      document.getElementById('categoria').value = 'alimentacao';
+      document.getElementById('formError').style.display = 'none';
+    }
+
+    // Salvar transação
+    document.getElementById('btnSalvar').addEventListener('click', async function () {
+      const descricao = document.getElementById('descricao').value.trim();
+      const valor = parseFloat(document.getElementById('valor').value);
+      const tipo = document.getElementById('tipo').value;
+      const categoria = document.getElementById('categoria').value;
+      const formError = document.getElementById('formError');
+
+      if (!descricao || !valor || valor <= 0) {
+        formError.textContent = 'Preencha todos os campos corretamente.';
+        formError.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('{{ url_for("criar_transacao") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            descricao, valor, tipo, categoria
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          location.reload();
+        } else {
+          formError.textContent = data.error || 'Erro ao criar transação';
+          formError.style.display = 'block';
+        }
+      } catch (error) {
+        formError.textContent = 'Erro de conexão.';
+        formError.style.display = 'block';
+      }
+    });
+
+    // Deletar transação
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async function () {
+        const id = this.dataset.id;
+        if (!confirm('Tem certeza que deseja deletar esta transação?')) return;
+
+        try {
+          const response = await fetch(`/api/transacoes/${id}`, {
+            method: 'DELETE'
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            location.reload();
+          }
+        } catch (error) {
+          alert('Erro ao deletar transação');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceControl – Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="auth-page">
+
+  <div class="auth-container">
+    <div class="auth-card">
+
+      <div class="auth-logo">
+        <span class="brand-icon-lg">💰</span>
+        <h1 class="brand-title">FinanceControl</h1>
+        <p class="brand-subtitle">Controle suas finanças com facilidade</p>
+      </div>
+
+      <form class="auth-form" id="formLogin" novalidate>
+        <h2>Entrar na sua conta</h2>
+
+        <div id="loginError" style="color: #ff6b6b; font-size: 0.85rem; margin-bottom: 16px; display: none;"></div>
+
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email"
+                 placeholder="seu@email.com" autocomplete="email" required />
+          <span class="field-error" id="emailError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <div class="input-password">
+            <input type="password" id="senha" name="senha"
+                   placeholder="Digite sua senha" autocomplete="current-password" required />
+            <button type="button" class="toggle-password" aria-label="Mostrar senha">👁</button>
+          </div>
+          <span class="field-error" id="senhaError"></span>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="lembrar" />
+            Lembrar de mim
+          </label>
+          <a href="#" class="link-forgot">Esqueci a senha</a>
+        </div>
+
+        <button type="submit" class="btn-primary btn-full">Entrar</button>
+
+        <p class="auth-switch">
+          Não tem conta? <a href="{{ url_for('cadastro') }}" class="link-primary">Cadastre-se gratuitamente</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Toggle senha visível
+    document.querySelector('.toggle-password').addEventListener('click', function () {
+      const input = document.getElementById('senha');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    });
+
+    // Validação e envio
+    document.getElementById('formLogin').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+      const loginError = document.getElementById('loginError');
+
+      if (!email || !senha) {
+        loginError.textContent = 'Preencha todos os campos';
+        loginError.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('{{ url_for("login") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, senha })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          window.location.href = data.redirect;
+        } else {
+          loginError.textContent = data.error || 'Erro ao fazer login';
+          loginError.style.display = 'block';
+        }
+      } catch (error) {
+        loginError.textContent = 'Erro de conexão. Tente novamente.';
+        loginError.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
